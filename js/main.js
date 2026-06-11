@@ -1,3 +1,13 @@
+//codigo wazaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+//codigo wazaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+//codigo wazaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+//codigo wazaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+//codigo wazaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+//codigo wazaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+//codigo wazaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+//codigo wazaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+
 // Detectar la rama actual (simulado desde el entorno)
 function getCurrentBranch() {
     const branchName = document.body.getAttribute('data-branch') || 'main';
