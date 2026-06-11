@@ -1,8 +1,5 @@
 // Detectar la rama actual (simulado desde el entorno)
-// En un proyecto real, esto podría venir de un archivo o API
 function getCurrentBranch() {
-    // Esta información la actualizaremos manualmente en cada rama
-    // Simulamos la detección de rama
     const branchName = document.body.getAttribute('data-branch') || 'main';
     return branchName;
 }
@@ -24,13 +21,13 @@ function displayBranchInfo() {
 // Obtener características según la rama
 function getFeaturesForBranch(branch) {
     const features = {
-        'main': 'Características base del proyecto',
-        'feature/mensaje-bienvenida': '✨ Mensaje de bienvenida personalizado',
-        'feature/contador-clics': '🔢 Contador de clics interactivo',
-        'feature/theme-switcher': '🎨 Cambiador de tema oscuro/claro'
+        'main': 'Características base del proyecto + 🌓 Cambio de tema',
+        'feature/mensaje-bienvenida': '✨ Mensaje de bienvenida personalizado + 🌓 Cambio de tema',
+        'feature/contador-clics': '🔢 Contador de clics interactivo + 🌓 Cambio de tema',
+        'feature/theme-switcher': '🎨 Cambiador de tema oscuro/claro (completo)'
     };
     
-    return features[branch] || 'Características estándar';
+    return features[branch] || 'Características estándar + 🌓 Cambio de tema';
 }
 
 // Configurar mensaje principal
@@ -68,9 +65,48 @@ function setupSecondaryButton() {
     }
 }
 
+// ===== NUEVO: Función para el modo oscuro/claro =====
+function setupThemeToggle() {
+    const themeButton = document.getElementById('themeToggle');
+    
+    // Verificar si hay una preferencia guardada
+    const savedTheme = localStorage.getItem('theme');
+    
+    // Aplicar tema guardado o detectar preferencia del sistema
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeButton.textContent = '☀️ Modo Claro';
+    } else if (savedTheme === 'light') {
+        document.body.classList.remove('dark-mode');
+        themeButton.textContent = '🌙 Modo Oscuro';
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // Si el sistema prefiere modo oscuro
+        document.body.classList.add('dark-mode');
+        themeButton.textContent = '☀️ Modo Claro';
+        localStorage.setItem('theme', 'dark');
+    }
+    
+    // Evento del botón
+    themeButton.addEventListener('click', () => {
+        const isDarkMode = document.body.classList.toggle('dark-mode');
+        
+        if (isDarkMode) {
+            themeButton.textContent = '☀️ Modo Claro';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            themeButton.textContent = '🌙 Modo Oscuro';
+            localStorage.setItem('theme', 'light');
+        }
+    });
+}
+
 // Función específica para la rama feature/mensaje-bienvenida
 function addWelcomeMessage() {
     const mainSection = document.querySelector('.main-feature');
+    
+    // Verificar si ya existe para no duplicar
+    if (document.querySelector('.welcome-message')) return;
+    
     const welcomeMessage = document.createElement('div');
     welcomeMessage.className = 'welcome-message';
     welcomeMessage.style.cssText = `
@@ -89,29 +125,37 @@ function addWelcomeMessage() {
     
     mainSection.appendChild(welcomeMessage);
     
-    // Agregar animación CSS
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
+    // Agregar animación CSS si no existe
+    if (!document.querySelector('#welcome-animation')) {
+        const style = document.createElement('style');
+        style.id = 'welcome-animation';
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    `;
-    document.head.appendChild(style);
+        `;
+        document.head.appendChild(style);
+    }
 }
 
 // Función específica para la rama feature/contador-clics
 function addCounterFeature() {
     const secondarySection = document.querySelector('.secondary-feature');
+    
+    // Verificar si ya existe para no duplicar
+    if (document.querySelector('.counter-feature')) return;
+    
     let counter = 0;
     
     const counterDiv = document.createElement('div');
+    counterDiv.className = 'counter-feature';
     counterDiv.style.cssText = `
         margin-top: 20px;
         padding: 15px;
@@ -165,51 +209,6 @@ function addCounterFeature() {
     secondarySection.appendChild(counterDiv);
 }
 
-// Función específica para la rama feature/theme-switcher
-function addThemeSwitcher() {
-    const header = document.querySelector('header');
-    const container = document.querySelector('.container');
-    
-    const themeButton = document.createElement('button');
-    themeButton.textContent = '🌙 Modo Oscuro';
-    themeButton.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 10px 20px;
-        background: #2d3748;
-        color: white;
-        border: none;
-        border-radius: 25px;
-        cursor: pointer;
-        z-index: 1000;
-        font-size: 14px;
-    `;
-    
-    let isDarkMode = false;
-    
-    themeButton.addEventListener('click', () => {
-        isDarkMode = !isDarkMode;
-        if (isDarkMode) {
-            document.body.style.background = '#1a202c';
-            container.style.background = '#2d3748';
-            container.style.color = '#e2e8f0';
-            themeButton.textContent = '☀️ Modo Claro';
-            themeButton.style.background = '#e2e8f0';
-            themeButton.style.color = '#2d3748';
-        } else {
-            document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-            container.style.background = 'white';
-            container.style.color = '#333';
-            themeButton.textContent = '🌙 Modo Oscuro';
-            themeButton.style.background = '#2d3748';
-            themeButton.style.color = 'white';
-        }
-    });
-    
-    document.body.appendChild(themeButton);
-}
-
 // Inicializar según la rama
 function initializeFeatures() {
     const currentBranch = getCurrentBranch();
@@ -217,6 +216,7 @@ function initializeFeatures() {
     // Configurar botones base
     setupMainButton();
     setupSecondaryButton();
+    setupThemeToggle(); // ← NUEVO: Inicializar el tema
     
     // Agregar características específicas según la rama
     switch(currentBranch) {
@@ -227,7 +227,27 @@ function initializeFeatures() {
             addCounterFeature();
             break;
         case 'feature/theme-switcher':
-            addThemeSwitcher();
+            // El theme switcher ya está incluido por defecto
+            // Pero podemos agregar un indicador visual
+            const themeIndicator = document.createElement('div');
+            themeIndicator.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                background: #48bb78;
+                color: white;
+                padding: 5px 10px;
+                border-radius: 5px;
+                font-size: 12px;
+                z-index: 1000;
+            `;
+            themeIndicator.textContent = '🎨 Theme Switcher Activo';
+            document.body.appendChild(themeIndicator);
+            
+            setTimeout(() => {
+                themeIndicator.style.opacity = '0';
+                setTimeout(() => themeIndicator.remove(), 1000);
+            }, 3000);
             break;
     }
     
